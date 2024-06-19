@@ -134,42 +134,66 @@ const blogCards = [
 ]
 
 let toBeRendered = [...blogCards]
+let searchResults = []
 
-function blogCard(image, category, date, brief) {
-  let card = `<div class="card">
-  <img src="${image}" alt="">
-  <div><p class="${category} type">${category[0].toUpperCase() + category.slice(1)}</p><p class="date">${date}</p></div>
-  <p class="brief bold">${brief}</p>
-</div>`
+const template = document.getElementById("card-template")
+const blogsContainer = document.getElementById("cards-wrapper")
+const searchField = document.querySelectorAll(".search-field")
 
-  return card
-}
+document.querySelector("nav .search").addEventListener("click", () => {
+  searchField[0].style.display == "none" ? searchField[0].style.display = "inline" : searchField[0].style.display = "none"
+})
 
-const filtersBtns = document.querySelectorAll(".category-btn")
-
-const renderBlogCards = () => {
-  const blogCardsWrapper = document.getElementById("blog-cards-wrapper")
-  blogCardsWrapper.innerHTML = ""
-  filtersBtns[0].classList.add("active")
-  toBeRendered.map(item => (
-    blogCardsWrapper.innerHTML += blogCard(item.image, item.category, item.date, item.brief)
-  ))
-} 
-
-const filterCards = (el) => {
-  if (el.textContent.toLowerCase() == "all posts"){
-    toBeRendered = [...blogCards]
-    renderBlogCards()
-    filtersBtns.forEach(item => item.classList.remove("active"))
-    filtersBtns[0].classList.add("active")
-  } else {
-    toBeRendered = blogCards.filter(item => (
-      item.category == el.textContent.toLowerCase()
-    ))
-    renderBlogCards()
-    filtersBtns.forEach(item => item.classList.remove("active"))
-    el.classList.add("active")
+function skeletonLoader() {
+  blogsContainer.innerHTML = ""
+  for (let i = 0; i < 10; i++) {
+    let skeletonCard = template.content.cloneNode(true)
+    blogsContainer.append(skeletonCard)
   }
 }
 
-filtersBtns.forEach(item => item.addEventListener("click", () => filterCards(item)))
+function renderBlogCards(arr) {
+  blogsContainer.innerHTML = ""
+  arr.forEach(card => {
+    let div = template.content.cloneNode(true)
+    div.getElementById("image").src = card.image
+    div.getElementById("category").innerText = card.category
+    div.getElementById("category").classList.add(card.category.toLowerCase())
+    div.getElementById("date").innerText = card.date
+    div.getElementById("brief").innerText = card.brief
+    div.querySelectorAll(".skeleton").forEach(item => item.classList.remove("skeleton"))
+    blogsContainer.append(div)
+  })
+}
+
+function displayBlogCards(myArr) {
+  skeletonLoader()
+  setTimeout(() => renderBlogCards(myArr), 2000)
+}
+
+displayBlogCards(toBeRendered)
+
+function filterBlogCards(el) {
+  document.querySelectorAll(".category-btn").forEach(item => item.classList.remove("active"))
+  if(el.textContent.toLowerCase() == "all posts") {
+    toBeRendered = [...blogCards]
+    displayBlogCards(toBeRendered)
+    document.querySelector(".category-btn").classList.add("active")
+  } else {
+    toBeRendered = blogCards.filter(card => el.textContent.toLowerCase() == card.category.toLocaleLowerCase())
+    displayBlogCards(toBeRendered)
+    document.getElementById(el.textContent.toLocaleLowerCase()).classList.add("active")
+  }
+}
+
+function searcBlog(el) {
+  console.log(el.value);
+  searchResults = toBeRendered.filter(item => item.category.toLowerCase().includes(el.value.toLowerCase()) || item.brief.toLowerCase().includes(el.value.toLowerCase()))
+  searchResults.length == 0 ? blogsContainer.innerHTML = "404" : displayBlogCards(searchResults)
+  if(el.value.length == 0) {
+    displayBlogCards(toBeRendered)
+  }
+}
+
+searchField.forEach(item => item.addEventListener("input", () => searcBlog(item)))
+document.querySelectorAll(".category-btn").forEach(item => item.addEventListener("click", () => filterBlogCards(item)))

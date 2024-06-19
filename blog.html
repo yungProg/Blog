@@ -10,6 +10,12 @@
             margin-bottom: 42px;
         }
 
+        #search-field {
+          width: 100%;
+          margin-top: 55px;
+          display: none;
+        }
+
         .category-wrapper {
             padding-top: 7vh;
             padding-bottom: 7vh;
@@ -30,51 +36,70 @@
             color: #fff;
             padding: 5px 8px;
             border-radius: 2px;
+            cursor: pointer;
         }
 
         .active {
-          background-color: yellow;
-          color: #fff;
+          background-color: #32a132;
         }
 
-        #blog-cards-wrapper {
+        #cards-wrapper {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
           gap: 10px;
-          justify-content: center;
-          /* grid-template-rows: repeat(auto, 300px); */
         }
 
-        .card {
-          padding: 10px;
+        #card {
+          /* width: 250px; */
+          height: 300px;
           background-color: #fff;
+          border-radius: 10px;
+          padding: 8px;
         }
 
-        .card > img {
+        #card > img {
           width: 100%;
           height: 200px;
           object-fit: cover;
         }
 
-        .card > div {
-          margin-top: 8px;
-          margin-bottom: 8px;
+        #card > div {
           display: flex;
           justify-content: space-between;
-          align-items: center;
+          margin-top: 10px;
+          margin-bottom: 12px;
         }
 
-        .brief {
-          margin-bottom: 8px;
+        .skeleton.category, .skeleton.date {
+          width: 70px;
+          height: 20px;
+        }
+
+        .skeleton.brief {
+          height: 40px;
+          width: 100%;
+        }
+
+        .skeleton {
+          animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        @keyframes skeleton-loading {
+          from {
+            background-color: #cecece;
+          }
+          to {
+            background-color: #a0a0a0;
+          }
         }
     </style>
 </head>
-<body onload="renderBlogCards()">
+<body>
     <div id="container">
         <header>
             <nav>
-              <h1><a href="index.html"><span class="light">THE</span> <span class="bold">STYLEDLIFE</span></a></h1>
-              <div>
+                <h1><a href="index.html"><span class="light">THE</span> <span class="bold">STYLEDLIFE</span></a></h1>
+                <div>
                   <ul class="nav-links">
                     <li class="link bold"><a href="index.html#about">About</a></li>
                     <li class="link bold"><a href="">Blog</a></li>
@@ -119,13 +144,31 @@
                   </button>
                 </div>
               </nav>
+              <input type="search" placeholder="Type here..." name="search-field" class="search-field" id="search-field">
         </header>
         <main>
             <div class="category-wrapper">
                 <h2>Blog Posts</h2>
-                <div><button type="button" class="category-btn">All Posts</button><button type="button" class="category-btn">Beauty</button><button type="button" class="category-btn">Fashion</button><button type="button" class="category-btn">Lifestyle</button></div>
+                <div>
+                  <button type="button" id="all-posts" class="category-btn active">All Posts</button>
+                  <button type="button" id="beauty" class="category-btn">Beauty</button>
+                  <button type="button" id="fashion" class="category-btn">Fashion</button>
+                  <button type="button" id="lifestyle" class="category-btn">Lifestyle</button>
+                </div>
             </div>
-            <section id="blog-cards-wrapper">
+            <section id="cards-wrapper">
+                <template id="card-template">
+                  <a href="">
+                    <div id="card">
+                      <img src="" alt="" id="image" class="skeleton image">
+                      <div>
+                        <p id="category" class="skeleton category type"></p>
+                        <p id="date" class="skeleton date"></p>
+                      </div>
+                      <p id="brief" class="skeleton brief"></p>
+                    </div>
+                  </a>
+                </template>
             </section>
         </main>
         <footer>
